@@ -14,7 +14,10 @@ O site está inteiramente em `index.html`, com CSS e JavaScript incorporados. N�
 
 ## Funcionalidades
 
-- Quatro etapas: Recebidas, Em análise, Em andamento e Concluídas.
+- Quatro colunas iniciais: Recebidas, Em análise, Em andamento e Concluídas. É possível criar novas colunas, renomear as existentes e excluí-las.
+- Ao excluir uma coluna com solicitações, é obrigatório escolher outra coluna para recebê-las. A última coluna é mantida para que o quadro continue utilizável.
+- O tipo da etapa (Pendente, Em andamento ou Concluída) define os indicadores e o tratamento de prazos, independentemente do nome escolhido.
+- Botão de expandir ao lado da lixeira: abre todos os dados, incluindo a descrição completa com quebras de linha, e permite seguir para a edição.
 - Cadastro e edição de solicitações. Exclusão pelo ícone de lixeira em cada cartão ou pelo formulário de edição, com confirmação que identifica a solicitação.
 - Tema claro ou escuro pelo seletor no cabeçalho. A preferência fica salva separadamente dos dados do quadro; no primeiro acesso, segue o tema do sistema.
 - Código da Solicitação obrigatório, aceitando apenas inteiros não negativos, sem letras, sinais, notação científica ou casas decimais. O código é salvo como número e aparece no título do cartão. Valores acima de `Number.MAX_SAFE_INTEGER` (9.007.199.254.740.991) são rejeitados para evitar perda de precisão.
@@ -24,7 +27,7 @@ O site está inteiramente em `index.html`, com CSS e JavaScript incorporados. N�
 - Busca sem distinção de acentos e filtro por prioridade.
 - Indicadores gerais de volume, andamento, conclusão e prazos vencidos. Os filtros afetam os cartões; os indicadores continuam mostrando o total do quadro.
 - Dados locais persistidos automaticamente e atualizados entre abas da mesma origem.
-- Exportação de todas as solicitações em JSON.
+- Exportação das solicitações e da configuração das colunas em JSON.
 - Exemplos identificados no primeiro acesso. A remoção dos exemplos preserva os itens criados ou editados pelo usuário.
 
 ## Dados e limites desta versão
@@ -41,11 +44,12 @@ Não há autenticação, banco de dados compartilhado, sincronização entre dis
 
 O fluxo foi validado em Chromium com Playwright: carregamento, cadastro, persistência após recarregar, busca com acentos, filtros combinados, edição, mudança de status pelo formulário e por arraste, indicadores de prazo, exportação JSON, limpeza de exemplos, confirmação/cancelamento de exclusão, quadro vazio persistido e formulário em tela de 390 px. A versão autocontida também foi validada isoladamente, em iframe com scripts permitidos e armazenamento/formulários nativos bloqueados, sem requisições externas. Não há ferramentas de build requeridas para executar o site.
 
-Os testes de exclusão e temas estão em `tests/kanban.spec.cjs`; a validação de códigos e a compatibilidade com solicitações antigas estão em `tests/request-code.spec.cjs`. Com o servidor acima em execução e Playwright disponível no Node, execute:
+Os testes de exclusão e temas estão em `tests/kanban.spec.cjs`; a validação de códigos e a compatibilidade com solicitações antigas estão em `tests/request-code.spec.cjs`; detalhes completos e gestão de colunas são cobertos por `tests/columns-details.spec.cjs`. Com o servidor acima em execução e Playwright disponível no Node, execute:
 
 ```sh
 node tests/kanban.spec.cjs
 node tests/request-code.spec.cjs
+node tests/columns-details.spec.cjs
 ```
 
-O teste usa Chromium em `/usr/bin/chromium`. Para outra instalação, configure `SOLKANBAN_CHROMIUM`; para outro endereço do servidor, configure `SOLKANBAN_TEST_URL`. A suíte cobre exclusão por cartão e formulário, cancelamento, persistência, indicadores, tema do sistema, escolha claro/escuro, sincronização entre abas, uso no celular e prévia com armazenamento bloqueado.
+O teste usa Chromium em `/usr/bin/chromium`. Para outra instalação, configure `SOLKANBAN_CHROMIUM`; para outro endereço do servidor, configure `SOLKANBAN_TEST_URL`. A suíte cobre exclusão por cartão e formulário, cancelamento, persistência, indicadores, tema do sistema, escolha claro/escuro, sincronização entre abas, uso no celular e prévia com armazenamento bloqueado. A suíte de colunas cobre detalhes sem truncamento, renomeação, criação, classificação, arraste para colunas novas, transferência de solicitações ao excluir, proteção da última coluna, sincronização e preservação após falhas de gravação.

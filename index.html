@@ -80,6 +80,45 @@
 [data-theme="dark"] .toast.error { background:#f2b7a8; color:#4a2218; }
 [data-theme="dark"] dialog::backdrop { background:#080f0bcc; }
 @media(max-width:650px) { .theme-control-label,.topbar-right .local-badge { display:none; } .theme-control { padding:1px 5px; gap:3px; } .theme-control select { font-size:10px; min-height:27px; } .card-delete { width:32px; height:32px; } }
+
+/* Configurable columns and full request details. */
+.board { grid-template-columns:repeat(var(--column-count,4),minmax(245px,1fr)); overflow-x:auto; padding-bottom:10px; }
+.board-heading-actions { display:flex; align-items:center; gap:14px; }
+.column-heading { gap:5px; align-items:flex-start; }
+.column-heading h3 { min-width:0; flex:1; overflow-wrap:anywhere; line-height:1.6; }
+.column-heading .status-dot { margin-top:5px; }
+.column-count { margin-top:2px; }
+.column-actions { display:flex; gap:3px; margin-left:auto; }
+.column-actions button { display:inline-flex; justify-content:center; align-items:center; margin:0; padding:5px; width:26px; height:26px; border:1px solid var(--border); border-radius:5px; background:#fff; color:#7b8c80; }
+.column-actions button:hover { background:#e9eee9; color:#455f4d; }
+.column-actions button:disabled { opacity:.4; cursor:not-allowed; }
+.column-actions .column-remove:hover { background:#fff0eb; color:#b76855; }
+.column[data-kind="pending"] .status-dot { background:#d6ad62; }
+.column[data-kind="progress"] .status-dot { background:#7c9bc9; }
+.column[data-kind="done"] .status-dot { background:#72a792; }
+.card-expand { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; padding:5px; border:1px solid #dce5e0; border-radius:6px; background:#f3f7f4; color:#648573; }
+.card-expand:hover { background:#e1eee5; }
+.card-expand svg { width:14px; height:14px; }
+#details-dialog { width:650px; }
+.details-subtitle { color:#819287; font-size:11px; margin:0 0 22px; }
+.detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; margin:0; }
+.detail-grid dt { font-size:10px; font-weight:600; color:#84968a; margin-bottom:7px; }
+.detail-grid dd { font-size:13px; line-height:1.8; margin:0; overflow-wrap:anywhere; }
+.detail-wide { grid-column:1 / -1; }
+.detail-description { white-space:pre-wrap; }
+#column-dialog { width:440px; }
+#delete-column-dialog { width:450px; }
+#delete-column-dialog h2 { font-size:20px; margin-bottom:15px; }
+#delete-column-description { font-size:12px; color:#83938a; line-height:1.8; }
+.field-note { font-size:10px; color:#89998e; line-height:1.7; margin:-7px 0 18px; }
+[data-theme="dark"] .column-actions button { background:#26362b; border-color:#415245; color:#b7cbbb; }
+[data-theme="dark"] .column-actions button:hover { background:#384d3e; }
+[data-theme="dark"] .column-actions .column-remove:hover { background:#5c3b30; color:#ffc0ad; }
+[data-theme="dark"] .card-expand { background:#2c4234; border-color:#49624f; color:#b0d4bc; }
+[data-theme="dark"] .card-expand:hover { background:#3b5946; }
+[data-theme="dark"] :is(.details-subtitle,.detail-grid dt,.field-note,#delete-column-description) { color:#a9beb0; }
+@media(max-width:950px) { .board { grid-template-columns:repeat(var(--column-count,4),260px); } .board-heading-actions .board-hint { display:none; } }
+@media(max-width:650px) { .board-heading { height:auto; min-height:60px; flex-wrap:wrap; padding:10px 0; } .board-tab { min-height:32px; } .board-heading-actions { margin-left:auto; } .board-heading-actions .button { padding:8px 9px; font-size:10px; } .card-expand { width:32px; height:32px; } .detail-grid { grid-template-columns:1fr; gap:18px; } .column-actions button { width:30px; height:30px; } }
   </style>
 </head>
 <body>
@@ -102,7 +141,7 @@
         <article class="metric"><div><span>Prazo vencido</span><strong id="metric-overdue">0</strong><small>Pendências que pedem atenção</small></div><span class="metric-icon rose" data-icon="clock"></span></article>
       </section>
       <section class="board-section" aria-labelledby="board-title">
-        <div class="board-heading"><div class="board-tab"><span data-icon="board"></span><h2 id="board-title">Quadro de solicitações</h2></div><span class="board-hint"><span data-icon="move"></span>Arraste para mudar de etapa</span></div>
+        <div class="board-heading"><div class="board-tab"><span data-icon="board"></span><h2 id="board-title">Quadro de solicitações</h2></div><div class="board-heading-actions"><span class="board-hint"><span data-icon="move"></span>Arraste para mudar de etapa</span><button id="new-column" class="button secondary"><span data-icon="plus"></span>Nova coluna</button></div></div>
         <div class="toolbar"><label class="search"><span data-icon="search"></span><input id="search" type="search" placeholder="Buscar código, obra ou responsável…" aria-label="Buscar solicitações"></label><div class="toolbar-actions"><label class="filter"><span data-icon="filter"></span><select id="priority-filter" aria-label="Filtrar por prioridade"><option value="">Todas as prioridades</option><option value="high">Alta prioridade</option><option value="medium">Média prioridade</option><option value="low">Baixa prioridade</option></select></label><button class="button secondary" id="export"><span data-icon="download"></span><span>Exportar backup</span></button></div></div>
         <div class="sample-notice" id="storage-notice" role="status" hidden><span data-icon="info"></span><p>Esta visualização não permite salvar no navegador. Você pode explorar o quadro, mas as alterações são temporárias. Exporte um backup antes de fechar.</p></div>
         <div class="sample-notice" id="sample-notice"><span data-icon="info"></span><p>Um ponto de partida: estas solicitações são <strong>exemplos</strong>. Crie as suas ou <button id="clear-examples">remova os exemplos</button>.</p></div>
@@ -117,8 +156,26 @@
       <input type="hidden" id="request-id">
       <label class="field">Código da Solicitação *<input id="code" type="text" inputmode="numeric" pattern="[0-9]+" required placeholder="Ex.: 1042" title="Informe apenas números inteiros, sem letras ou casas decimais."></label>
       <label class="field">Descrição<textarea id="description" rows="3" maxlength="4000" placeholder="Adicione contexto e os detalhes importantes…"></textarea></label>
-      <div class="form-grid"><label class="field">Obra / projeto<input id="project" maxlength="80" placeholder="Ex.: Residencial Aurora"></label><label class="field">Responsável<input id="assignee" maxlength="80" placeholder="Nome do responsável"></label><label class="field">Prioridade<select id="priority"><option value="low">Baixa</option><option value="medium" selected>Média</option><option value="high">Alta</option></select></label><label class="field">Status<select id="status"><option value="new">Recebidas</option><option value="review">Em análise</option><option value="progress">Em andamento</option><option value="done">Concluídas</option></select></label><label class="field">Prazo<input id="due" type="date" min="1900-01-01" max="9999-12-31"></label></div>
+      <div class="form-grid"><label class="field">Obra / projeto<input id="project" maxlength="80" placeholder="Ex.: Residencial Aurora"></label><label class="field">Responsável<input id="assignee" maxlength="80" placeholder="Nome do responsável"></label><label class="field">Prioridade<select id="priority"><option value="low">Baixa</option><option value="medium" selected>Média</option><option value="high">Alta</option></select></label><label class="field">Status<select id="status" required></select></label><label class="field">Prazo<input id="due" type="date" min="1900-01-01" max="9999-12-31"></label></div>
       <p class="form-note" id="form-storage-note">Os dados ficam apenas neste navegador. Exporte backups para guardá-los.</p><div class="dialog-actions"><button type="button" id="delete-request" class="button danger" hidden>Excluir</button><div><button type="button" id="cancel-dialog" class="button secondary">Cancelar</button><button type="button" id="save-request" class="button primary">Salvar solicitação</button></div></div>
+    </form>
+  </dialog>
+  <dialog id="details-dialog" aria-labelledby="details-title">
+    <div class="dialog-heading"><div><div class="eyebrow">VISÃO COMPLETA</div><h2 id="details-title">Detalhes da solicitação</h2></div><button type="button" class="icon-button" id="close-details" aria-label="Fechar detalhes"><span data-icon="x"></span></button></div>
+    <p id="details-subtitle" class="details-subtitle"></p><dl id="details-content" class="detail-grid"></dl>
+    <div class="dialog-actions"><div><button type="button" id="details-close-bottom" class="button secondary">Fechar</button><button type="button" id="details-edit" class="button primary"><span data-icon="pencil"></span>Editar solicitação</button></div></div>
+  </dialog>
+  <dialog id="column-dialog" aria-labelledby="column-dialog-title">
+    <form id="column-form"><div class="dialog-heading"><div><div class="eyebrow">SEU QUADRO, SEU FLUXO</div><h2 id="column-dialog-title">Nova coluna</h2></div><button type="button" class="icon-button" id="close-column" aria-label="Fechar configuração da coluna"><span data-icon="x"></span></button></div>
+      <input id="column-id" type="hidden"><label class="field">Nome da coluna *<input id="column-name" required maxlength="60" placeholder="Ex.: Aguardando aprovação"></label>
+      <label class="field">Tipo de etapa<select id="column-kind"><option value="pending">Pendente</option><option value="progress">Em andamento</option><option value="done">Concluída</option></select></label><p class="field-note">Define a contagem nos indicadores e se o prazo ainda está pendente.</p>
+      <div class="dialog-actions"><div><button type="button" id="cancel-column" class="button secondary">Cancelar</button><button type="button" id="save-column" class="button primary">Salvar coluna</button></div></div>
+    </form>
+  </dialog>
+  <dialog id="delete-column-dialog" aria-labelledby="delete-column-title">
+    <form id="delete-column-form"><h2 id="delete-column-title">Excluir coluna?</h2><p id="delete-column-description"></p><input type="hidden" id="delete-column-id">
+      <label id="column-destination-field" class="field" hidden>Mover solicitações para<select id="column-destination" required></select></label>
+      <div class="confirm-actions"><button type="button" id="cancel-delete-column" class="button secondary">Cancelar</button><button type="button" id="confirm-delete-column" class="button danger-fill">Excluir coluna</button></div>
     </form>
   </dialog>
   <dialog id="confirm-dialog" aria-labelledby="confirm-title"><form method="dialog"><div class="confirm-icon" data-icon="info"></div><h2 id="confirm-title">Remover solicitação?</h2><p id="confirm-description"></p><div class="confirm-actions"><button type="button" class="button secondary" value="cancel">Cancelar</button><button type="button" class="button danger-fill" value="confirm">Remover</button></div></form></dialog>
@@ -146,6 +203,8 @@ const icons = {
   x:'<path d="m6 6 12 12M6 18 18 6"/>',
   moon:'<path d="M20.5 13A8.5 8.5 0 0 1 11 3.5 8.5 8.5 0 1 0 20.5 13Z"/>',
   trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/>',
+  expand:'<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5M3 3l6 6m12-6-6 6M3 21l6-6m12 6-6-6"/>',
+  pencil:'<path d="m15 4 5 5M4 20l4-1L21 6l-5-5L3 14l-1 8Z"/>',
   calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18"/>'
 };
 const icon = (name) => `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[name] || ''}</svg>`;
@@ -164,7 +223,15 @@ $('theme-select').addEventListener('change',event => {
   catch { toast('Tema alterado nesta visualização. Não foi possível salvar a preferência.'); }
 });
 const escapeHTML = (value) => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-const statuses = {new:'Recebidas', review:'Em análise', progress:'Em andamento', done:'Concluídas'};
+const defaultColumns = () => [
+  {id:'new',name:'Recebidas',kind:'pending'},
+  {id:'review',name:'Em análise',kind:'pending'},
+  {id:'progress',name:'Em andamento',kind:'progress'},
+  {id:'done',name:'Concluídas',kind:'done'}
+];
+// Older saved boards implicitly use the four original columns.
+const columnsOf = value => value.columns === undefined ? defaultColumns() : value.columns;
+const columnFor = (id,value = state) => columnsOf(value).find(column => column.id === id);
 const priorities = {high:'Alta', medium:'Média', low:'Baixa'};
 const STORAGE_KEY = 'solkanban.v1';
 function parseCode(value) {
@@ -194,7 +261,7 @@ const seedRows = [
   ['Liberação de pedido de compra','Conferir as condições comerciais e liberar o pedido no sistema.','Vila das Flores','Lucas Martins','high','progress',4,1036],
   ['Atualização do centro de custo','Centros de custo revisados e organizados para o novo projeto.','Administrativo','Pedro Santos','low','done',-3,1031]
 ];
-const initialState = () => ({version:1, nextNumber:1009, requests:seedRows.map((r,i) => ({id:newId(),number:1001+i,code:r[7],description:`${r[0]}. ${r[1]}`,project:r[2],assignee:r[3],priority:r[4],status:r[5],due:relativeDate(r[6]),sample:true}))});
+const initialState = () => ({version:1, columns:defaultColumns(), nextNumber:1009, requests:seedRows.map((r,i) => ({id:newId(),number:1001+i,code:r[7],description:`${r[0]}. ${r[1]}`,project:r[2],assignee:r[3],priority:r[4],status:r[5],due:relativeDate(r[6]),sample:true}))});
 let toastTimer;
 function toast(message, error = false) {
   clearTimeout(toastTimer);
@@ -205,9 +272,16 @@ function toast(message, error = false) {
 }
 function validState(value) {
   if (!value || value.version !== 1 || !Number.isSafeInteger(value.nextNumber) || !Array.isArray(value.requests)) return false;
+  const columns = columnsOf(value);
+  const columnIds = new Set();
+  if (!Array.isArray(columns) || !columns.length || !columns.every(column => {
+    if (!column || typeof column.id !== 'string' || !column.id || columnIds.has(column.id) || typeof column.name !== 'string' || !column.name.trim() || column.name.length > 60 || !['pending','progress','done'].includes(column.kind)) return false;
+    columnIds.add(column.id);
+    return true;
+  })) return false;
   const ids = new Set();
   return value.requests.every(r => {
-    if (!r || typeof r.id !== 'string' || ids.has(r.id) || !Number.isSafeInteger(r.number) || !Object.hasOwn(statuses,r.status) || !Object.hasOwn(priorities,r.priority)) return false;
+    if (!r || typeof r.id !== 'string' || ids.has(r.id) || !Number.isSafeInteger(r.number) || !columnIds.has(r.status) || !Object.hasOwn(priorities,r.priority)) return false;
     ids.add(r.id);
     const hasCode = Object.hasOwn(r,'code');
     if (hasCode ? typeof r.code !== 'number' || parseCode(r.code) === null : typeof r.title !== 'string' || !r.title.trim()) return false;
@@ -237,12 +311,14 @@ if (!storageBlocked && !sessionOnly && saved === null) {
   catch { sessionOnly = true; }
 }
 function save(next) {
+  next = {...next,columns:structuredClone(columnsOf(next))};
+  if (!validState(next)) { toast('Não foi possível salvar: verifique as colunas e as solicitações.',true); return false; }
   if (storageBlocked) { toast('Armazenamento indisponível. Seus dados existentes foram preservados. Recarregue após resolver o problema.',true); return false; }
   if (sessionOnly) { state = next; render(); return true; }
   try { localStorage.setItem(STORAGE_KEY,JSON.stringify(next)); state = next; render(); return true; }
   catch { toast('Não foi possível salvar. Libere espaço no navegador e tente novamente.',true); return false; }
 }
-const overdue = r => r.status !== 'done' && r.due && r.due < dateString();
+const overdue = r => columnFor(r.status)?.kind !== 'done' && r.due && r.due < dateString();
 const normalize = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');
 let renderedDay = dateString();
 function render() {
@@ -257,25 +333,31 @@ function render() {
   const filtered = state.requests.filter(r => (!priority || r.priority === priority) && normalize([requestCode(r),r.title,r.description,r.project,r.assignee,`SK-${r.number}`].join(' ')).includes(query));
   $('nav-count').textContent = state.requests.length;
   $('metric-total').textContent = state.requests.length;
-  $('metric-progress').textContent = state.requests.filter(r => r.status === 'progress').length;
-  $('metric-done').textContent = state.requests.filter(r => r.status === 'done').length;
+  $('metric-progress').textContent = state.requests.filter(r => columnFor(r.status)?.kind === 'progress').length;
+  $('metric-done').textContent = state.requests.filter(r => columnFor(r.status)?.kind === 'done').length;
   $('metric-overdue').textContent = state.requests.filter(overdue).length;
   $('sample-notice').hidden = !state.requests.some(r => r.sample);
   $('result-count').textContent = `${filtered.length} de ${state.requests.length} solicitações · Resumo geral acima`;
-  $('board').innerHTML = Object.entries(statuses).map(([key,label]) => {
+  const columns = columnsOf(state);
+  const selectedStatus = $('status').value;
+  $('status').innerHTML = columns.map(column => `<option value="${escapeHTML(column.id)}">${escapeHTML(column.name)}</option>`).join('');
+  $('status').value = columnFor(selectedStatus) ? selectedStatus : columns[0].id;
+  $('board').style.setProperty('--column-count',columns.length);
+  $('board').innerHTML = columns.map(({id:key,name:label,kind}) => {
     const rows = filtered.filter(r => r.status === key);
-    return `<section class="column" data-status="${key}" aria-label="${label}"><div class="column-heading"><span class="status-dot"></span><h3>${label}</h3><span class="column-count">${rows.length}</span><button data-add="${key}" aria-label="Adicionar em ${label}">${icon('plus')}</button></div><div class="cards">${rows.length ? rows.map(cardHTML).join('') : `<div class="empty-column">${query || priority ? 'Nenhuma solicitação com estes filtros.' : 'Um espaço para a próxima entrega.'}</div>`}</div><button class="column-add" data-add="${key}">${icon('plus')} Adicionar solicitação</button></section>`;
+    return `<section class="column" data-status="${escapeHTML(key)}" data-kind="${kind}" aria-label="${escapeHTML(label)}"><div class="column-heading"><span class="status-dot"></span><h3>${escapeHTML(label)}</h3><span class="column-count">${rows.length}</span><div class="column-actions"><button data-column-edit="${escapeHTML(key)}" aria-label="Editar coluna: ${escapeHTML(label)}" title="Renomear e configurar coluna">${icon('pencil')}</button><button class="column-remove" data-column-delete="${escapeHTML(key)}" aria-label="Excluir coluna: ${escapeHTML(label)}" title="${columns.length === 1 ? 'Mantenha pelo menos uma coluna' : 'Excluir coluna'}" ${columns.length === 1 ? 'disabled' : ''}>${icon('trash')}</button></div></div><div class="cards">${rows.length ? rows.map(cardHTML).join('') : `<div class="empty-column">${query || priority ? 'Nenhuma solicitação com estes filtros.' : 'Um espaço para a próxima entrega.'}</div>`}</div><button class="column-add" data-add="${escapeHTML(key)}">${icon('plus')} Adicionar solicitação</button></section>`;
   }).join('');
+  if ($('details-dialog').open) renderDetails();
 }
 function cardHTML(r) {
   const label = requestLabel(r);
   const description = requestDescription(r);
   const initials = r.assignee.trim().split(/\s+/).map(n => n[0]).slice(0,2).join('').toUpperCase() || '?';
   const due = r.due ? new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short'}).format(new Date(`${r.due}T12:00:00`)).replace('.','') : 'Sem prazo';
-  return `<article class="card" draggable="true" data-id="${escapeHTML(r.id)}"><div class="card-top"><span class="priority ${r.priority}"><i></i>${priorities[r.priority]}</span><div class="card-meta"><span class="card-id">SK-${r.number}</span><button class="card-delete" data-delete="${escapeHTML(r.id)}" aria-label="Excluir solicitação: ${escapeHTML(label)}" title="Excluir solicitação" draggable="false">${icon('trash')}</button></div></div><button class="card-title" data-edit="${escapeHTML(r.id)}" aria-label="Editar ${escapeHTML(label)}">${escapeHTML(label)}</button>${description ? `<p class="card-description">${escapeHTML(description)}</p>` : ''}<div class="project-tag">${icon('building')}<span>${escapeHTML(r.project || 'Sem projeto')}</span></div><div class="card-bottom"><div class="person" title="${escapeHTML(r.assignee || 'Sem responsável')}"><span class="person-avatar">${escapeHTML(initials)}</span><span>${escapeHTML(r.assignee || 'Sem responsável')}</span></div><span class="due ${overdue(r) ? 'overdue' : ''}" title="${overdue(r) ? 'Prazo vencido: ' : ''}${escapeHTML(r.due || 'Sem prazo')}">${icon(r.status === 'done' ? 'check' : 'calendar')}${escapeHTML(due)}</span></div></article>`;
+  return `<article class="card" draggable="true" data-id="${escapeHTML(r.id)}"><div class="card-top"><span class="priority ${r.priority}"><i></i>${priorities[r.priority]}</span><div class="card-meta"><span class="card-id">SK-${r.number}</span><button class="card-expand" data-details="${escapeHTML(r.id)}" aria-label="Expandir solicitação: ${escapeHTML(label)}" title="Ver dados completos" draggable="false">${icon('expand')}</button><button class="card-delete" data-delete="${escapeHTML(r.id)}" aria-label="Excluir solicitação: ${escapeHTML(label)}" title="Excluir solicitação" draggable="false">${icon('trash')}</button></div></div><button class="card-title" data-edit="${escapeHTML(r.id)}" aria-label="Editar ${escapeHTML(label)}">${escapeHTML(label)}</button>${description ? `<p class="card-description">${escapeHTML(description)}</p>` : ''}<div class="project-tag">${icon('building')}<span>${escapeHTML(r.project || 'Sem projeto')}</span></div><div class="card-bottom"><div class="person" title="${escapeHTML(r.assignee || 'Sem responsável')}"><span class="person-avatar">${escapeHTML(initials)}</span><span>${escapeHTML(r.assignee || 'Sem responsável')}</span></div><span class="due ${overdue(r) ? 'overdue' : ''}" title="${overdue(r) ? 'Prazo vencido: ' : ''}${escapeHTML(r.due || 'Sem prazo')}">${icon(columnFor(r.status)?.kind === 'done' ? 'check' : 'calendar')}${escapeHTML(due)}</span></div></article>`;
 }
 const fields = ['description','project','assignee','priority','status','due'];
-function openRequest(id = '',status = 'new') {
+function openRequest(id = '',status = null) {
   $('request-form').reset();
   $('code').setCustomValidity('');
   $('request-id').value = id;
@@ -287,7 +369,7 @@ function openRequest(id = '',status = 'new') {
     $('code').value = requestCode(request) ?? '';
     $('description').value = requestDescription(request);
   }
-  else $('status').value = status;
+  else $('status').value = columnFor(status) ? status : columnsOf(state)[0].id;
   $('request-dialog').showModal();
   $('code').focus();
 }
@@ -301,6 +383,7 @@ function submitRequest(event) {
   const code = parseCode($('code').value);
   $('code').setCustomValidity(code === null ? 'Informe o Código da Solicitação usando apenas números inteiros válidos, sem letras ou casas decimais.' : '');
   if (!$('request-form').reportValidity()) return;
+  if (!columnFor($('status').value)) { toast('Escolha uma coluna existente para a solicitação.',true); return; }
   const next = structuredClone(state);
   const id = $('request-id').value;
   const existing = next.requests.find(r => r.id === id);
@@ -329,9 +412,15 @@ $('board').addEventListener('click',event => {
   const add = event.target.closest('[data-add]');
   const edit = event.target.closest('[data-edit]');
   const remove = event.target.closest('[data-delete]');
+  const details = event.target.closest('[data-details]');
+  const editColumn = event.target.closest('[data-column-edit]');
+  const removeColumn = event.target.closest('[data-column-delete]');
   if (add) openRequest('',add.dataset.add);
   if (edit) openRequest(edit.dataset.edit);
   if (remove) deleteRequest(remove.dataset.delete);
+  if (details) openDetails(details.dataset.details);
+  if (editColumn) openColumn(editColumn.dataset.columnEdit);
+  if (removeColumn) openDeleteColumn(removeColumn.dataset.columnDelete);
 });
 async function confirmAction(title,description) {
   $('confirm-title').textContent = title;
@@ -357,10 +446,110 @@ $('clear-examples').addEventListener('click',async () => {
   if (!await confirmAction('Remover os exemplos?','Somente exemplos não editados serão removidos. Suas solicitações serão mantidas.')) return;
   if (save({...state,requests:state.requests.filter(r => !r.sample)})) toast('Exemplos removidos. O quadro é seu!');
 });
+let detailsId = null;
+function renderDetails() {
+  const request = state.requests.find(item => item.id === detailsId);
+  if (!request) { $('details-dialog').close(); detailsId = null; return; }
+  $('details-title').textContent = requestLabel(request);
+  $('details-subtitle').textContent = `Dados completos da solicitação · SK-${request.number}${request.sample ? ' · Exemplo' : ''}`;
+  const due = request.due ? new Intl.DateTimeFormat('pt-BR',{dateStyle:'long'}).format(new Date(`${request.due}T12:00:00`)) : 'Sem prazo';
+  const entries = [
+    ['Código da Solicitação',requestCode(request) ?? 'Não informado','detail-code'],
+    ['Coluna',columnFor(request.status)?.name || 'Não informada','detail-column'],
+    ['Obra / projeto',request.project || 'Não informado','detail-project'],
+    ['Responsável',request.assignee || 'Não informado','detail-assignee'],
+    ['Prioridade',priorities[request.priority],'detail-priority'],
+    ['Prazo',due,'detail-due'],
+    ['Descrição',requestDescription(request) || 'Sem descrição','detail-description']
+  ];
+  $('details-content').innerHTML = entries.map(([label,value,id]) => `<div class="${id === 'detail-description' ? 'detail-wide' : ''}"><dt>${label}</dt><dd id="${id}" class="${id === 'detail-description' ? 'detail-description' : ''}">${escapeHTML(value)}</dd></div>`).join('');
+}
+function openDetails(id) {
+  if (!state.requests.some(request => request.id === id)) return;
+  detailsId = id;
+  renderDetails();
+  $('details-dialog').showModal();
+  $('close-details').focus();
+}
+['close-details','details-close-bottom'].forEach(id => $(id).addEventListener('click',() => $('details-dialog').close()));
+$('details-edit').addEventListener('click',() => {
+  const id = detailsId;
+  $('details-dialog').close();
+  if (state.requests.some(request => request.id === id)) openRequest(id);
+});
+function openColumn(id = '') {
+  const column = columnFor(id);
+  if (id && !column) return;
+  $('column-form').reset();
+  $('column-name').setCustomValidity('');
+  $('column-id').value = id;
+  $('column-dialog-title').textContent = column ? 'Editar coluna' : 'Nova coluna';
+  if (column) { $('column-name').value = column.name; $('column-kind').value = column.kind; }
+  $('column-dialog').showModal();
+  $('column-name').focus();
+}
+$('new-column').addEventListener('click',() => openColumn());
+['close-column','cancel-column'].forEach(id => $(id).addEventListener('click',() => $('column-dialog').close()));
+$('column-name').addEventListener('input',() => $('column-name').setCustomValidity(''));
+function saveColumn(event) {
+  event.preventDefault();
+  const id = $('column-id').value;
+  const name = $('column-name').value.trim();
+  const columns = columnsOf(state);
+  const duplicate = columns.some(column => column.id !== id && normalize(column.name) === normalize(name));
+  $('column-name').setCustomValidity(!name ? 'Informe um nome para a coluna.' : duplicate ? 'Já existe uma coluna com esse nome.' : '');
+  if (!$('column-form').reportValidity()) return;
+  if (id && !columnFor(id)) { toast('Esta coluna foi removida em outra aba. Feche a configuração e tente novamente.',true); return; }
+  const next = structuredClone(state);
+  next.columns = structuredClone(columns);
+  const column = id ? next.columns.find(item => item.id === id) : {id:newId()};
+  column.name = name;
+  column.kind = $('column-kind').value;
+  if (!id) next.columns.push(column);
+  if (save(next)) { $('column-dialog').close(); toast(id ? 'Coluna atualizada.' : 'Coluna criada.'); $('new-column').focus(); }
+}
+$('save-column').addEventListener('click',saveColumn);
+$('column-form').addEventListener('submit',saveColumn);
+$('column-form').addEventListener('keydown',event => { if (event.key === 'Enter' && !event.isComposing && event.target.tagName === 'INPUT') saveColumn(event); });
+function prepareColumnDeletion(id) {
+  const columns = columnsOf(state);
+  const column = columnFor(id);
+  if (!column) { toast('Esta coluna já foi removida.',true); return false; }
+  if (columns.length === 1) { toast('Mantenha pelo menos uma coluna para organizar as solicitações.',true); return false; }
+  const count = state.requests.filter(request => request.status === id).length;
+  const destination = $('column-destination').value;
+  $('delete-column-id').value = id;
+  $('delete-column-description').textContent = count ? `A coluna “${column.name}” contém ${count} solicitação(ões). Escolha para onde movê-las antes de excluir. Nenhuma solicitação será apagada.` : `A coluna “${column.name}” está vazia e será excluída. As outras colunas serão mantidas.`;
+  $('column-destination-field').hidden = count === 0;
+  $('column-destination').disabled = count === 0;
+  $('column-destination').innerHTML = '<option value="">Selecione uma coluna</option>' + columns.filter(item => item.id !== id).map(item => `<option value="${escapeHTML(item.id)}">${escapeHTML(item.name)}</option>`).join('');
+  $('column-destination').value = columns.some(item => item.id === destination && item.id !== id) ? destination : '';
+  return true;
+}
+function openDeleteColumn(id) {
+  $('column-destination').value = '';
+  if (!prepareColumnDeletion(id)) return;
+  $('delete-column-dialog').showModal();
+  $('cancel-delete-column').focus();
+}
+$('cancel-delete-column').addEventListener('click',() => $('delete-column-dialog').close());
+function removeColumn(event) {
+  event.preventDefault();
+  const id = $('delete-column-id').value;
+  if (!prepareColumnDeletion(id)) { $('delete-column-dialog').close(); return; }
+  if (!$('delete-column-form').reportValidity()) return;
+  const destination = $('column-destination').value;
+  const next = structuredClone(state);
+  next.columns = columnsOf(state).filter(column => column.id !== id);
+  next.requests.forEach(request => { if (request.status === id) request.status = destination; });
+  if (save(next)) { $('delete-column-dialog').close(); toast('Coluna excluída. As solicitações foram preservadas.'); $('new-column').focus(); }
+}
+$('confirm-delete-column').addEventListener('click',removeColumn);
+$('delete-column-form').addEventListener('submit',removeColumn);
 let draggingId = null;
 $('board').addEventListener('dragstart',event => {
   const card = event.target.closest('.card');
-  if (!card) return;
+  if (!card || event.target.closest('button')) return;
   draggingId = card.dataset.id;
   event.dataTransfer.setData('text/plain',draggingId);
   event.dataTransfer.effectAllowed = 'move';
@@ -380,16 +569,16 @@ $('board').addEventListener('drop',event => {
   const column = event.target.closest('.column');
   const id = draggingId;
   clearDrag();
-  if (!column || !id) return;
+  if (!column || !id || !columnFor(column.dataset.status)) return;
   const next = structuredClone(state);
   const request = next.requests.find(r => r.id === id);
   if (!request || request.status === column.dataset.status) return;
   request.status = column.dataset.status;
   request.sample = false;
-  if (save(next)) toast(`Solicitação movida para ${statuses[request.status].toLocaleLowerCase('pt-BR')}.`);
+  if (save(next)) toast(`Solicitação movida para ${columnFor(request.status).name.toLocaleLowerCase('pt-BR')}.`);
 });
 $('export').addEventListener('click',() => {
-  const url = URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));
+  const url = URL.createObjectURL(new Blob([JSON.stringify({...state,columns:columnsOf(state)},null,2)],{type:'application/json'}));
   const link = document.createElement('a');
   link.href = url;
   link.download = `solkanban-backup-${dateString()}.json`;
