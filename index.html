@@ -117,7 +117,7 @@
       <input type="hidden" id="request-id">
       <label class="field">Código da Solicitação *<input id="code" type="text" inputmode="numeric" pattern="[0-9]+" required placeholder="Ex.: 1042" title="Informe apenas números inteiros, sem letras ou casas decimais."></label>
       <label class="field">Descrição<textarea id="description" rows="3" maxlength="4000" placeholder="Adicione contexto e os detalhes importantes…"></textarea></label>
-      <div class="form-grid"><label class="field">Obra / projeto<input id="project" maxlength="80" placeholder="Ex.: Residencial Aurora"></label><label class="field">Responsável<input id="assignee" maxlength="80" placeholder="Nome do responsável"></label><label class="field">Prioridade<select id="priority"><option value="low">Baixa</option><option value="medium" selected>Média</option><option value="high">Alta</option></select></label><label class="field">Status<select id="status"><option value="new">Recebidas</option><option value="review">Em análise</option><option value="progress">Em andamento</option><option value="done">Concluídas</option></select></label><label class="field">Prazo<input id="due" type="date" min="1900-01-01" max="9999-12-31"></label><label class="field">Referência SIENGE (opcional)<input id="reference" maxlength="40" placeholder="Ex.: SC-1042"></label></div>
+      <div class="form-grid"><label class="field">Obra / projeto<input id="project" maxlength="80" placeholder="Ex.: Residencial Aurora"></label><label class="field">Responsável<input id="assignee" maxlength="80" placeholder="Nome do responsável"></label><label class="field">Prioridade<select id="priority"><option value="low">Baixa</option><option value="medium" selected>Média</option><option value="high">Alta</option></select></label><label class="field">Status<select id="status"><option value="new">Recebidas</option><option value="review">Em análise</option><option value="progress">Em andamento</option><option value="done">Concluídas</option></select></label><label class="field">Prazo<input id="due" type="date" min="1900-01-01" max="9999-12-31"></label></div>
       <p class="form-note" id="form-storage-note">Os dados ficam apenas neste navegador. Exporte backups para guardá-los.</p><div class="dialog-actions"><button type="button" id="delete-request" class="button danger" hidden>Excluir</button><div><button type="button" id="cancel-dialog" class="button secondary">Cancelar</button><button type="button" id="save-request" class="button primary">Salvar solicitação</button></div></div>
     </form>
   </dialog>
@@ -185,16 +185,16 @@ const newId = () => globalThis.crypto?.randomUUID?.() || `sk-${Date.now().toStri
 const dateString = (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 const relativeDate = (days) => { const date = new Date(); date.setDate(date.getDate()+days); return dateString(date); };
 const seedRows = [
-  ['Aquisição de materiais elétricos','Compra de cabos e disjuntores para a próxima etapa da instalação.','Residencial Aurora','Ana Costa','high','new',2,'SC-1042'],
-  ['Revisão do orçamento de fundação','Conferir quantitativos e atualizar a composição de custos.','Edifício Horizonte','Lucas Martins','medium','new',5,'SC-1043'],
-  ['Cadastro de novo fornecedor','Validar a documentação e os dados bancários para cadastro.','Administrativo','Marina Alves','low','new',7,'SC-1044'],
-  ['Aprovação de medição mensal','Analisar a medição de serviços referente à etapa de estrutura.','Residencial Aurora','Pedro Santos','high','review',-2,'SC-1038'],
-  ['Ajuste no cronograma da obra','Revisar as datas de entrega junto aos responsáveis técnicos.','Vila das Flores','Ana Costa','medium','review',3,'SC-1040'],
-  ['Conferência de notas fiscais','Conciliar notas de fornecedores com os pedidos de compra.','Edifício Horizonte','Marina Alves','medium','progress',1,'SC-1035'],
-  ['Liberação de pedido de compra','Conferir as condições comerciais e liberar o pedido no sistema.','Vila das Flores','Lucas Martins','high','progress',4,'SC-1036'],
-  ['Atualização do centro de custo','Centros de custo revisados e organizados para o novo projeto.','Administrativo','Pedro Santos','low','done',-3,'SC-1031']
+  ['Aquisição de materiais elétricos','Compra de cabos e disjuntores para a próxima etapa da instalação.','Residencial Aurora','Ana Costa','high','new',2,1042],
+  ['Revisão do orçamento de fundação','Conferir quantitativos e atualizar a composição de custos.','Edifício Horizonte','Lucas Martins','medium','new',5,1043],
+  ['Cadastro de novo fornecedor','Validar a documentação e os dados bancários para cadastro.','Administrativo','Marina Alves','low','new',7,1044],
+  ['Aprovação de medição mensal','Analisar a medição de serviços referente à etapa de estrutura.','Residencial Aurora','Pedro Santos','high','review',-2,1038],
+  ['Ajuste no cronograma da obra','Revisar as datas de entrega junto aos responsáveis técnicos.','Vila das Flores','Ana Costa','medium','review',3,1040],
+  ['Conferência de notas fiscais','Conciliar notas de fornecedores com os pedidos de compra.','Edifício Horizonte','Marina Alves','medium','progress',1,1035],
+  ['Liberação de pedido de compra','Conferir as condições comerciais e liberar o pedido no sistema.','Vila das Flores','Lucas Martins','high','progress',4,1036],
+  ['Atualização do centro de custo','Centros de custo revisados e organizados para o novo projeto.','Administrativo','Pedro Santos','low','done',-3,1031]
 ];
-const initialState = () => ({version:1, nextNumber:1009, requests:seedRows.map((r,i) => ({id:newId(),number:1001+i,code:Number(r[7].slice(3)),description:`${r[0]}. ${r[1]}`,project:r[2],assignee:r[3],priority:r[4],status:r[5],due:relativeDate(r[6]),reference:r[7],sample:true}))});
+const initialState = () => ({version:1, nextNumber:1009, requests:seedRows.map((r,i) => ({id:newId(),number:1001+i,code:r[7],description:`${r[0]}. ${r[1]}`,project:r[2],assignee:r[3],priority:r[4],status:r[5],due:relativeDate(r[6]),sample:true}))});
 let toastTimer;
 function toast(message, error = false) {
   clearTimeout(toastTimer);
@@ -211,7 +211,7 @@ function validState(value) {
     ids.add(r.id);
     const hasCode = Object.hasOwn(r,'code');
     if (hasCode ? typeof r.code !== 'number' || parseCode(r.code) === null : typeof r.title !== 'string' || !r.title.trim()) return false;
-    return ['description','project','assignee','due','reference'].every(k => typeof r[k] === 'string') && (!r.due || /^\d{4}-\d{2}-\d{2}$/.test(r.due));
+    return ['description','project','assignee','due'].every(k => typeof r[k] === 'string') && (!r.due || /^\d{4}-\d{2}-\d{2}$/.test(r.due));
   });
 }
 let state;
@@ -254,7 +254,7 @@ function render() {
   $('export').disabled = storageBlocked;
   const query = normalize($('search').value.trim());
   const priority = $('priority-filter').value;
-  const filtered = state.requests.filter(r => (!priority || r.priority === priority) && normalize([requestCode(r),r.title,r.description,r.project,r.assignee,r.reference,`SK-${r.number}`].join(' ')).includes(query));
+  const filtered = state.requests.filter(r => (!priority || r.priority === priority) && normalize([requestCode(r),r.title,r.description,r.project,r.assignee,`SK-${r.number}`].join(' ')).includes(query));
   $('nav-count').textContent = state.requests.length;
   $('metric-total').textContent = state.requests.length;
   $('metric-progress').textContent = state.requests.filter(r => r.status === 'progress').length;
@@ -274,7 +274,7 @@ function cardHTML(r) {
   const due = r.due ? new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short'}).format(new Date(`${r.due}T12:00:00`)).replace('.','') : 'Sem prazo';
   return `<article class="card" draggable="true" data-id="${escapeHTML(r.id)}"><div class="card-top"><span class="priority ${r.priority}"><i></i>${priorities[r.priority]}</span><div class="card-meta"><span class="card-id">SK-${r.number}</span><button class="card-delete" data-delete="${escapeHTML(r.id)}" aria-label="Excluir solicitação: ${escapeHTML(label)}" title="Excluir solicitação" draggable="false">${icon('trash')}</button></div></div><button class="card-title" data-edit="${escapeHTML(r.id)}" aria-label="Editar ${escapeHTML(label)}">${escapeHTML(label)}</button>${description ? `<p class="card-description">${escapeHTML(description)}</p>` : ''}<div class="project-tag">${icon('building')}<span>${escapeHTML(r.project || 'Sem projeto')}</span></div><div class="card-bottom"><div class="person" title="${escapeHTML(r.assignee || 'Sem responsável')}"><span class="person-avatar">${escapeHTML(initials)}</span><span>${escapeHTML(r.assignee || 'Sem responsável')}</span></div><span class="due ${overdue(r) ? 'overdue' : ''}" title="${overdue(r) ? 'Prazo vencido: ' : ''}${escapeHTML(r.due || 'Sem prazo')}">${icon(r.status === 'done' ? 'check' : 'calendar')}${escapeHTML(due)}</span></div></article>`;
 }
-const fields = ['description','project','assignee','priority','status','due','reference'];
+const fields = ['description','project','assignee','priority','status','due'];
 function openRequest(id = '',status = 'new') {
   $('request-form').reset();
   $('code').setCustomValidity('');

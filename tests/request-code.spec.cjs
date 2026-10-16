@@ -22,6 +22,7 @@ const executablePath = process.env.SOLKANBAN_CHROMIUM || '/usr/bin/chromium';
       assert.equal(await code.evaluate(el => el.validity.valid), false);
       assert.equal(await page.locator('.card').count(), 8);
     }
+    assert.equal(await page.locator('#reference').count(), 0);
     await code.fill('00012345');
     await page.locator('#description').fill('Código numérico de teste');
     await page.locator('#save-request').click();
@@ -30,6 +31,7 @@ const executablePath = process.env.SOLKANBAN_CHROMIUM || '/usr/bin/chromium';
     assert.equal(request.code, 12345);
     assert.equal(typeof request.code, 'number');
     assert.equal(Object.hasOwn(request, 'title'), false);
+    assert.equal(Object.hasOwn(request, 'reference'), false, 'New requests no longer require the removed reference field');
     await page.reload();
     await page.locator('#search').fill('12345');
     assert.equal(await page.locator('.card').count(), 1);

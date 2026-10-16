@@ -18,7 +18,7 @@ O site está inteiramente em `index.html`, com CSS e JavaScript incorporados. N�
 - Cadastro e edição de solicitações. Exclusão pelo ícone de lixeira em cada cartão ou pelo formulário de edição, com confirmação que identifica a solicitação.
 - Tema claro ou escuro pelo seletor no cabeçalho. A preferência fica salva separadamente dos dados do quadro; no primeiro acesso, segue o tema do sistema.
 - Código da Solicitação obrigatório, aceitando apenas inteiros não negativos, sem letras, sinais, notação científica ou casas decimais. O código é salvo como número e aparece no título do cartão. Valores acima de `Number.MAX_SAFE_INTEGER` (9.007.199.254.740.991) são rejeitados para evitar perda de precisão.
-- Descrição, projeto, responsável, prioridade, prazo e referência SIENGE.
+- Descrição, projeto, responsável, prioridade e prazo.
 - Solicitações antigas são mantidas. Se o antigo título era textual, o cartão informa que o código ainda não foi preenchido; ao editar, esse texto aparece na descrição e o código deve ser informado.
 - Mudança de etapa por arraste no computador ou pelo campo Status no formulário, inclusive no celular e com teclado.
 - Busca sem distinção de acentos e filtro por prioridade.
@@ -35,7 +35,7 @@ Em prévias que bloqueiam o armazenamento, a escolha do tema também dura apenas
 
 Fora desse modo, os dados ficam no `localStorage` do navegador, na chave `solkanban.v1`. São específicos do navegador e da origem (protocolo, domínio e porta). Limpar os dados do site ou usar outro navegador/origem não mantém o mesmo quadro. Exporte cópias regularmente. O arquivo JSON contém as solicitações completas; nesta versão a restauração exige uma operação manual, pois ainda não há importação pela interface.
 
-Não há autenticação, banco de dados compartilhado, sincronização entre dispositivos ou conexão à API do SIENGE. A referência SIENGE é um campo de texto para organização local.
+Não há autenticação, banco de dados compartilhado, sincronização entre dispositivos ou conexão à API do SIENGE.
 
 ## Validação
 
