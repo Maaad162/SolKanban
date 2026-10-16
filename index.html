@@ -1,10 +1,19 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ed6a35">
+  <meta name="color-scheme" content="light dark">
   <title>SolKanban · Solicitações</title>
+  <script>
+    (() => {
+      let theme;
+      try { theme = localStorage.getItem('solkanban.theme'); } catch { /* Previews can block storage. */ }
+      if (theme !== 'light' && theme !== 'dark') theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23ed6a35'/%3E%3Ccircle cx='32' cy='32' r='13' fill='white'/%3E%3C/svg%3E">
   <style>
 :root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#273330;background:#f7f8fa;font-synthesis:none;--orange:#eb6b38;--muted:#84908c;--border:#e8ecea}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}button,a{touch-action:manipulation}button{cursor:pointer}a{color:inherit;text-decoration:none}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #f2aa86;outline-offset:3px}svg{width:19px;height:19px;display:block;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}[data-icon]{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}.sidebar{position:fixed;inset:0 auto 0 0;width:239px;background:#fff;border-right:1px solid var(--border);padding:34px 21px;display:flex;flex-direction:column}.brand{display:flex;align-items:center;gap:10px;font-size:23px;font-weight:750;letter-spacing:-1.2px}.brand-mark{width:39px;height:39px;color:white;background:var(--orange);border-radius:12px}.brand-mark svg{width:26px;height:26px}.brand-light{font-weight:450}.brand small{display:block;font-size:8px;letter-spacing:1.6px;color:#929a96;margin-top:5px;font-weight:600}.workspace{display:flex;align-items:center;gap:9px;font-size:10px;font-weight:650;border:1px solid var(--border);border-radius:9px;padding:12px 9px;margin-top:36px;white-space:nowrap}.workspace small{display:block;color:var(--muted);font-size:10px;font-weight:400;margin-top:5px}.workspace-icon{background:#f3f5f3;padding:8px;border-radius:7px;color:#7d8883}.local-dot{width:6px;height:6px;background:#59a17f;border-radius:50%;display:inline-block;flex:none}.workspace>.local-dot{margin-left:auto}.nav-label{font-size:9px;font-weight:650;letter-spacing:1.3px;color:#9aa19e;margin:33px 10px 15px}.nav-item{display:flex;align-items:center;gap:11px;font-size:12px;padding:13px 11px;border-radius:7px}.nav-item.active{color:#d95f30;background:#fff0e9;font-weight:650}.nav-count{margin-left:auto;font-size:10px;background:#ffe0ce;border-radius:5px;padding:3px 6px}.sidebar-tip{margin-top:auto;margin-bottom:27px;padding:20px 15px;background:#faf8f3;border:1px solid #f2eee5;border-radius:10px;overflow:hidden}.sidebar-tip>span{color:#c9a56a;margin-bottom:13px}.sidebar-tip strong{font-size:11px;display:block}.sidebar-tip p{font-size:11px;color:#93958d;line-height:1.8;margin:8px 0 20px}.tip-lines{display:flex;gap:5px;align-items:flex-end;height:24px}.tip-lines i{height:17px;flex:1;border-radius:3px;background:#eee2cc}.tip-lines i:nth-child(2){height:26px;background:#e9d5b4}.tip-lines i:nth-child(3){height:33px;background:#dec298}.tip-lines i:nth-child(4){height:40px;background:#c9a56a}.sidebar-bottom{display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);padding-top:20px;font-size:10px;line-height:1.7;color:#68776f}.sidebar-bottom small{display:block;font-size:9px;color:#9aa29e}.sidebar-bottom>span:last-child{margin-left:auto;color:#9aa29e}.sidebar-bottom svg{width:15px}.app-shell{margin-left:239px}.topbar{height:73px;border-bottom:1px solid var(--border);background:#ffffffc9;display:flex;align-items:center;justify-content:space-between;padding:0 39px;font-size:11px}.breadcrumb{color:#959e99;display:flex;gap:15px}.breadcrumb strong{color:#5c6963;font-weight:500}.breadcrumb>span{color:#c3cbc6}.topbar-right{display:flex;align-items:center;gap:20px}.local-badge{font-size:10px;color:#86928b;display:flex;gap:6px;align-items:center}.local-badge i{width:5px;height:5px;background:#6f9d85;border-radius:50%}.avatar{border:3px solid white;background:#e8eee9;width:33px;height:33px;display:grid;place-items:center;border-radius:50%;font-size:10px;font-weight:600;color:#567262;box-shadow:0 0 0 1px #e5eae6}main{padding:36px 39px 20px;max-width:1800px;margin:auto}.page-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:31px}.eyebrow{font-size:9px;letter-spacing:1.7px;color:#98a09b;font-weight:600}h1{font-size:32px;font-weight:650;letter-spacing:-1.2px;margin:10px 0}h1>span{color:var(--orange)}.page-heading p{font-size:12px;color:#8b9690;margin:0}.button{border:1px solid transparent;border-radius:7px;padding:11px 15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:11px;font-weight:600;white-space:nowrap;transition:background .15s,transform .15s}.button svg{width:16px;height:16px}.button:active{transform:translateY(1px)}.primary{background:var(--orange);color:white;box-shadow:0 3px 5px #eb6b3818}.primary:hover{background:#d65a2a}.secondary{background:white;color:#6e7b74;border-color:#e2e7e4}.secondary:hover{background:#f3f6f4}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:30px}.metric{border:1px solid var(--border);border-radius:10px;background:white;padding:20px;display:flex;justify-content:space-between;gap:6px;box-shadow:0 2px 3px #253b2e02}.metric>div>span{font-size:11px;color:#8b958f;display:block}.metric strong{display:block;font-size:29px;font-weight:600;letter-spacing:-1px;margin:9px 0}.metric small{font-size:9px;color:#a0a8a3}.metric-icon{height:34px;width:34px;border-radius:9px}.orange{color:#da8c60;background:#fff3e9}.blue{color:#6888c0;background:#eff4ff}.green{color:#669b84;background:#edf6f0}.rose{color:#cc8a8a;background:#fff0f0}.board-section{background:white;border:1px solid var(--border);border-radius:11px;padding:0 20px;box-shadow:0 2px 4px #253b2e02}.board-heading{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #edf0ed;gap:12px;height:61px}.board-tab{display:flex;align-items:center;gap:9px;height:100%;border-bottom:2px solid var(--orange);color:var(--orange)}h2{font-size:12px;color:#435349;font-weight:600;margin:0}.board-hint{display:flex;align-items:center;gap:6px;color:#a3aaa6;font-size:10px}.board-hint svg{width:13px;height:13px}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:20px 0 16px}.search{display:flex;align-items:center;gap:9px;width:330px;max-width:100%;border:1px solid var(--border);border-radius:7px;padding:10px 11px;color:#a5afa8}.search svg{width:15px;height:15px}.search input{font-size:10px;border:0;background:transparent;width:100%;min-width:0;color:#435349}.search input::placeholder{color:#9ea7a1}.toolbar-actions{display:flex;gap:9px}.filter{display:flex;align-items:center;gap:5px;border:1px solid var(--border);border-radius:7px;padding:0 10px;color:#8e9a92}.filter svg{width:14px;height:14px}.filter select{border:0;background:white;color:#748078;font-size:10px;padding:10px 3px;max-width:100%}.sample-notice{display:flex;align-items:center;gap:8px;background:#fffbf5;border:1px solid #f5ecd9;border-radius:6px;padding:9px 11px;margin-bottom:18px;color:#a18c68}.sample-notice svg{width:14px;height:14px}.sample-notice p{font-size:10px;margin:0;line-height:1.6}.sample-notice strong{font-weight:600}.sample-notice button{border:0;background:none;color:#98763f;padding:0;text-decoration:underline;font-size:inherit}.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:start}.column{background:#f7f8f9;border-radius:8px;padding:11px;min-height:345px;border:1px solid #f0f2f1;transition:background .2s,border-color .2s}.column.drag-over{background:#fff2e8;border-color:var(--orange)}.column-heading{display:flex;align-items:center;gap:7px;margin:3px 0 15px}.column-heading h3{font-size:10px;font-weight:650;margin:0;color:#636f68}.status-dot{width:6px;height:6px;border-radius:50%;background:#a8b1b7}.column[data-status=review] .status-dot{background:#d6ad62}.column[data-status=progress] .status-dot{background:#7c9bc9}.column[data-status=done] .status-dot{background:#72a792}.column-count{font-size:9px;color:#a4ada7;background:#e9edeb;border-radius:4px;padding:2px 5px}.column-heading button{margin-left:auto;border:0;background:transparent;color:#a3aca7;padding:1px}.column-heading svg{width:14px;height:14px}.card{background:#fff;border:1px solid #e7eae8;border-radius:8px;padding:14px 13px;margin-bottom:10px;box-shadow:0 2px 3px #253b2e03;cursor:grab;transition:box-shadow .2s,transform .2s}.card:hover{box-shadow:0 4px 12px #253b2e0d;transform:translateY(-1px)}.card.dragging{opacity:.4}.card-top{display:flex;align-items:center;justify-content:space-between;gap:5px}.priority{font-size:8px;border-radius:4px;display:inline-flex;align-items:center;gap:4px;padding:4px 6px;line-height:1}.priority i{width:4px;height:4px;border-radius:50%;background:currentColor}.priority.high{color:#c77265;background:#fff0ec}.priority.medium{color:#b89b54;background:#fcf6e7}.priority.low{color:#739a84;background:#eef6f0}.card-id{font-size:8px;color:#b0b8b3}.card-title{display:block;text-align:left;width:100%;background:none;border:0;padding:0;font-size:11px;font-weight:600;line-height:1.6;color:#46564b;margin:11px 0 6px;overflow-wrap:anywhere}.card-description{font-size:9px;color:#9aa49d;line-height:1.7;margin:0 0 12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}.project-tag{font-size:8px;background:#f5f7f5;color:#8b978f;border-radius:4px;display:inline-flex;align-items:center;gap:4px;padding:4px 6px;max-width:100%}.project-tag>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.project-tag svg{width:10px;height:10px}.card-bottom{border-top:1px solid #f0f2f0;display:flex;align-items:center;justify-content:space-between;gap:5px;margin-top:12px;padding-top:10px}.person{display:flex;align-items:center;gap:5px;font-size:8px;color:#9aa59d;min-width:0}.person>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px}.person-avatar{width:21px;height:21px;display:grid;place-items:center;background:#edf0f7;color:#8492b0;border-radius:50%;font-size:7px;flex:none}.card:nth-child(even) .person-avatar{background:#f5eee5;color:#ae997e}.due{font-size:8px;display:flex;align-items:center;gap:4px;color:#9ba69e;white-space:nowrap}.due svg{width:11px;height:11px}.due.overdue{color:#cf8176}.column-add{font-size:9px;display:flex;align-items:center;justify-content:center;gap:5px;background:transparent;color:#9ba69f;border:1px dashed #e0e5e1;border-radius:6px;width:100%;padding:9px}.column-add:hover{background:#edf0ed;color:#5e7265}.column-add svg{width:12px;height:12px}.empty-column{font-size:10px;color:#9aa69e;text-align:center;padding:25px 8px;line-height:1.7}.board-footer{display:flex;justify-content:space-between;padding:17px 0;font-size:9px;color:#a5aea8;gap:10px}.board-footer>span:last-child{display:flex;align-items:center;gap:5px}.board-footer .local-dot{width:4px;height:4px}.page-footer{display:flex;justify-content:space-between;gap:10px;margin-top:24px;font-size:9px;color:#aeb6b0}.footer-sun{color:#c1b49f;margin:0 5px}dialog{border:1px solid #e3e9e3;border-radius:15px;padding:27px;width:560px;max-width:calc(100vw - 28px);max-height:90dvh;color:#435349;box-shadow:0 20px 80px #1e382c30}dialog::backdrop{background:#20362d66;backdrop-filter:blur(3px)}.dialog-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}.dialog-heading h2{font-size:23px;letter-spacing:-.7px;margin-top:8px}.dialog-heading .eyebrow{font-size:8px}.icon-button{background:#f5f7f5;border:0;padding:7px;border-radius:7px;color:#829087}.field{display:flex;flex-direction:column;gap:7px;font-size:11px;font-weight:600;margin-bottom:16px}.field input,.field select,.field textarea{width:100%;padding:10px 11px;border:1px solid #dfe6df;border-radius:7px;background:white;font-size:12px;color:#526359;font-weight:400;min-height:38px}.field input::placeholder,.field textarea::placeholder{color:#b0b9b2}.field textarea{resize:vertical;min-height:75px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 15px}.form-note{font-size:10px;color:#99a39c;line-height:1.7}.dialog-actions{display:flex;justify-content:space-between;gap:8px;border-top:1px solid var(--border);padding-top:18px;margin-top:20px}.dialog-actions>div{display:flex;gap:8px;margin-left:auto}.danger{color:#c67164;background:#fff3ee}.danger:hover,.danger-fill{color:white;background:#c97163}.toast{position:fixed;bottom:22px;left:calc(50% + 119px);transform:translateX(-50%);background:#334d3e;color:white;padding:13px 22px;border-radius:9px;font-size:12px;box-shadow:0 5px 25px #223e3330;z-index:10;max-width:90vw;width:max-content}.toast.error{background:#a65648}#confirm-dialog{width:380px;padding:28px}#confirm-dialog h2{font-size:19px;margin-top:12px}#confirm-dialog p{font-size:12px;color:#8b968e;line-height:1.8}.confirm-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:24px}.confirm-icon{background:#fff3eb;color:#cf906d;padding:10px;border-radius:10px}[hidden]{display:none!important}
@@ -15,6 +24,62 @@
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 /* Keep secondary information readable on standard desktop screens. */
 .card-title{font-size:12px}.card-description{font-size:10px;color:#78867d}.card-id{color:#7d8c82}.person,.due{color:#77887c}.project-tag{color:#728176}.metric small{color:#7d8c82}.board-footer{color:#7b8b80}.page-heading p{color:#7c8c81}.eyebrow{color:#7e8c83}.empty-column{color:#7d8d82}.sample-notice{color:#8a744e}.board-hint{color:#7d8c82}
+
+/* Theme controls and card actions remain visible on touch screens. */
+:root { color-scheme: light; }
+.theme-control { display:flex; align-items:center; gap:6px; padding:3px 8px; border:1px solid var(--border); border-radius:7px; color:#68776f; background:#fff; }
+.theme-control svg { width:15px; height:15px; }
+.theme-control-label { font-size:10px; }
+.theme-control select { border:0; background:transparent; color:inherit; font-size:11px; min-height:28px; cursor:pointer; }
+.card-meta { display:flex; align-items:center; gap:5px; }
+.card-delete { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; padding:5px; border:1px solid #f1ded8; border-radius:6px; background:#fff7f4; color:#b76858; cursor:pointer; }
+.card-delete svg { width:14px; height:14px; }
+.card-delete:hover { background:#fbe4dc; color:#9c4939; }
+:root[data-theme="dark"] { color-scheme:dark; color:#e1e9e4; background:#151c19; --border:#354039; --muted:#a3b1a7; }
+[data-theme="dark"] :is(.sidebar,.board-section,.metric,dialog) { background:#202a24; border-color:var(--border); }
+[data-theme="dark"] dialog { color:#dce8df; }
+[data-theme="dark"] .topbar { background:#1b241f; }
+[data-theme="dark"] :is(.brand,.metric strong) { color:#e7eee9; }
+[data-theme="dark"] :is(.breadcrumb strong,h2,.card-title,.column-heading h3,.sidebar-tip strong) { color:#dbe6de; }
+[data-theme="dark"] :is(.eyebrow,.page-heading p,.metric>div>span,.metric small,.brand small,.nav-label,.breadcrumb,.local-badge,.sidebar-bottom,.sidebar-bottom small,.workspace small,.board-hint,.board-footer,.page-footer,.form-note,#confirm-dialog p) { color:#a5b5aa; }
+[data-theme="dark"] :is(.workspace,.search,.filter) { border-color:var(--border); }
+[data-theme="dark"] :is(.workspace-icon,.avatar,.icon-button,.project-tag,.column-count) { background:#303e34; color:#bdcfc0; }
+[data-theme="dark"] .avatar { border-color:#202a24; box-shadow:0 0 0 1px var(--border); }
+[data-theme="dark"] .nav-item.active { background:#412e23; color:#ffad86; }
+[data-theme="dark"] .nav-count { background:#62402c; color:#ffbf9e; }
+[data-theme="dark"] .sidebar-tip { background:#2b2c23; border-color:#3c3d30; }
+[data-theme="dark"] .sidebar-tip p { color:#b8b8a1; }
+[data-theme="dark"] :is(.search input,.filter select,.field input,.field select,.field textarea,.theme-control) { background:#1a231e; color:#dce8df; }
+[data-theme="dark"] .theme-control select { color:#dce8df; }
+[data-theme="dark"] :is(.field input,.field select,.field textarea,.theme-control) { border-color:#435348; }
+[data-theme="dark"] :is(.search input,.field input,.field textarea)::placeholder { color:#93a599; }
+[data-theme="dark"] :is(.board-heading,.card-bottom) { border-color:var(--border); }
+[data-theme="dark"] .column { background:#18211b; border-color:#2f3c32; }
+[data-theme="dark"] .column.drag-over { background:#3b2c21; border-color:var(--orange); }
+[data-theme="dark"] .card { background:#26322a; border-color:#3b4a3f; box-shadow:0 2px 4px #0002; }
+[data-theme="dark"] .card:hover { box-shadow:0 4px 14px #0004; }
+[data-theme="dark"] :is(.card-description,.card-id,.person,.due,.empty-column) { color:#aec1b2; }
+[data-theme="dark"] :is(.person-avatar,.card:nth-child(even) .person-avatar) { background:#3a4d40; color:#d0e3d4; }
+[data-theme="dark"] :is(.due.overdue,.priority.high) { color:#ffb5a5; }
+[data-theme="dark"] .priority.high { background:#50372f; }
+[data-theme="dark"] .priority.medium { color:#e8cb88; background:#443e2b; }
+[data-theme="dark"] .priority.low { color:#aad5b8; background:#2b4534; }
+[data-theme="dark"] .column-add { color:#afc1b3; border-color:#415245; }
+[data-theme="dark"] .column-add:hover { background:#2d3c31; }
+[data-theme="dark"] .sample-notice { color:#dbc89e; background:#302e23; border-color:#4e4936; }
+[data-theme="dark"] .sample-notice button { color:#f1d599; }
+[data-theme="dark"] .secondary { color:#cadacf; background:#2b3b30; border-color:#485c4e; }
+[data-theme="dark"] .secondary:hover { background:#384e40; }
+[data-theme="dark"] :is(.card-delete,.danger) { color:#ffc0ad; background:#48352e; border-color:#6e493b; }
+[data-theme="dark"] :is(.card-delete:hover,.danger:hover) { background:#6a4436; color:#ffe6dc; }
+[data-theme="dark"] :is(.orange,.confirm-icon) { background:#483729; color:#efb183; }
+[data-theme="dark"] .blue { background:#2d3a50; color:#acc7f1; }
+[data-theme="dark"] .green { background:#2b4435; color:#a1cdb0; }
+[data-theme="dark"] .rose { background:#4a3032; color:#e8acb0; }
+[data-theme="dark"] .toast { background:#c4ddca; color:#203628; }
+[data-theme="dark"] .toast.error { background:#f2b7a8; color:#4a2218; }
+[data-theme="dark"] dialog::backdrop { background:#080f0bcc; }
+@media(max-width:650px) { .theme-control-label,.topbar-right .local-badge { display:none; } .theme-control { padding:1px 5px; gap:3px; } .theme-control select { font-size:10px; min-height:27px; } .card-delete { width:32px; height:32px; } }
   </style>
 </head>
 <body>
@@ -27,7 +92,7 @@
     <div class="sidebar-bottom"><span class="local-dot"></span><span><span id="sidebar-storage">Dados neste navegador</span><small>Sem conexão com o SIENGE</small></span><span data-icon="lock"></span></div>
   </aside>
   <div class="app-shell">
-    <header class="topbar"><div class="breadcrumb">Espaço de trabalho <span>/</span> <strong>Solicitações</strong></div><div class="topbar-right"><span class="local-badge"><i></i>Versão local</span><span class="avatar">EU</span></div></header>
+    <header class="topbar"><div class="breadcrumb">Espaço de trabalho <span>/</span> <strong>Solicitações</strong></div><div class="topbar-right"><label class="theme-control"><span id="theme-icon" data-icon="sun"></span><span class="theme-control-label">Tema</span><select id="theme-select" aria-label="Tema"><option value="light">Claro</option><option value="dark">Escuro</option></select></label><span class="local-badge"><i></i>Versão local</span><span class="avatar">EU</span></div></header>
     <main id="quadro">
       <section class="page-heading"><div><div class="eyebrow">TUDO NO SEU TEMPO. TUDO NO SEU LUGAR.</div><h1>Solicitações<span>.</span></h1><p>Do primeiro pedido à última entrega, acompanhe cada etapa.</p></div><button id="new-request" class="button primary"><span data-icon="plus"></span>Nova solicitação</button></section>
       <section class="metrics" aria-label="Resumo das solicitações">
@@ -79,10 +144,25 @@ const icons = {
   download:'<path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/>',
   info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h0"/>',
   x:'<path d="m6 6 12 12M6 18 18 6"/>',
+  moon:'<path d="M20.5 13A8.5 8.5 0 0 1 11 3.5 8.5 8.5 0 1 0 20.5 13Z"/>',
+  trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/>',
   calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18"/>'
 };
 const icon = (name) => `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[name] || ''}</svg>`;
 document.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = icon(el.dataset.icon); });
+const THEME_KEY = 'solkanban.theme';
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  $('theme-select').value = theme;
+  $('theme-icon').innerHTML = icon(theme === 'dark' ? 'moon' : 'sun');
+}
+applyTheme(document.documentElement.dataset.theme);
+$('theme-select').addEventListener('change',event => {
+  const theme = event.target.value;
+  applyTheme(theme);
+  try { localStorage.setItem(THEME_KEY,theme); }
+  catch { toast('Tema alterado nesta visualização. Não foi possível salvar a preferência.'); }
+});
 const escapeHTML = (value) => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const statuses = {new:'Recebidas', review:'Em análise', progress:'Em andamento', done:'Concluídas'};
 const priorities = {high:'Alta', medium:'Média', low:'Baixa'};
@@ -149,7 +229,9 @@ function save(next) {
 }
 const overdue = r => r.status !== 'done' && r.due && r.due < dateString();
 const normalize = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');
+let renderedDay = dateString();
 function render() {
+  renderedDay = dateString();
   $('storage-status').textContent = storageBlocked ? 'Armazenamento indisponível' : sessionOnly ? 'Dados temporários nesta visualização' : 'Alterações salvas neste navegador';
   $('storage-notice').hidden = !sessionOnly;
   $('sidebar-storage').textContent = sessionOnly ? 'Dados nesta visualização' : 'Dados neste navegador';
@@ -173,7 +255,7 @@ function render() {
 function cardHTML(r) {
   const initials = r.assignee.trim().split(/\s+/).map(n => n[0]).slice(0,2).join('').toUpperCase() || '?';
   const due = r.due ? new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short'}).format(new Date(`${r.due}T12:00:00`)).replace('.','') : 'Sem prazo';
-  return `<article class="card" draggable="true" data-id="${escapeHTML(r.id)}"><div class="card-top"><span class="priority ${r.priority}"><i></i>${priorities[r.priority]}</span><span class="card-id">SK-${r.number}</span></div><button class="card-title" data-edit="${escapeHTML(r.id)}" aria-label="Editar ${escapeHTML(r.title)}">${escapeHTML(r.title)}</button>${r.description ? `<p class="card-description">${escapeHTML(r.description)}</p>` : ''}<div class="project-tag">${icon('building')}<span>${escapeHTML(r.project || 'Sem projeto')}</span></div><div class="card-bottom"><div class="person" title="${escapeHTML(r.assignee || 'Sem responsável')}"><span class="person-avatar">${escapeHTML(initials)}</span><span>${escapeHTML(r.assignee || 'Sem responsável')}</span></div><span class="due ${overdue(r) ? 'overdue' : ''}" title="${overdue(r) ? 'Prazo vencido: ' : ''}${escapeHTML(r.due || 'Sem prazo')}">${icon(r.status === 'done' ? 'check' : 'calendar')}${escapeHTML(due)}</span></div></article>`;
+  return `<article class="card" draggable="true" data-id="${escapeHTML(r.id)}"><div class="card-top"><span class="priority ${r.priority}"><i></i>${priorities[r.priority]}</span><div class="card-meta"><span class="card-id">SK-${r.number}</span><button class="card-delete" data-delete="${escapeHTML(r.id)}" aria-label="Excluir solicitação: ${escapeHTML(r.title)}" title="Excluir solicitação" draggable="false">${icon('trash')}</button></div></div><button class="card-title" data-edit="${escapeHTML(r.id)}" aria-label="Editar ${escapeHTML(r.title)}">${escapeHTML(r.title)}</button>${r.description ? `<p class="card-description">${escapeHTML(r.description)}</p>` : ''}<div class="project-tag">${icon('building')}<span>${escapeHTML(r.project || 'Sem projeto')}</span></div><div class="card-bottom"><div class="person" title="${escapeHTML(r.assignee || 'Sem responsável')}"><span class="person-avatar">${escapeHTML(initials)}</span><span>${escapeHTML(r.assignee || 'Sem responsável')}</span></div><span class="due ${overdue(r) ? 'overdue' : ''}" title="${overdue(r) ? 'Prazo vencido: ' : ''}${escapeHTML(r.due || 'Sem prazo')}">${icon(r.status === 'done' ? 'check' : 'calendar')}${escapeHTML(due)}</span></div></article>`;
 }
 const fields = ['title','description','project','assignee','priority','status','due','reference'];
 function openRequest(id = '',status = 'new') {
@@ -221,21 +303,31 @@ $('confirm-dialog').addEventListener('click',event => {
 $('board').addEventListener('click',event => {
   const add = event.target.closest('[data-add]');
   const edit = event.target.closest('[data-edit]');
+  const remove = event.target.closest('[data-delete]');
   if (add) openRequest('',add.dataset.add);
   if (edit) openRequest(edit.dataset.edit);
+  if (remove) deleteRequest(remove.dataset.delete);
 });
 async function confirmAction(title,description) {
   $('confirm-title').textContent = title;
   $('confirm-description').textContent = description;
   $('confirm-dialog').returnValue = 'cancel';
   $('confirm-dialog').showModal();
+  $('confirm-dialog').querySelector('button[value="cancel"]').focus();
   return new Promise(resolve => $('confirm-dialog').addEventListener('close',() => resolve($('confirm-dialog').returnValue === 'confirm'),{once:true}));
 }
-$('delete-request').addEventListener('click',async () => {
-  const id = $('request-id').value;
-  if (!await confirmAction('Excluir solicitação?','Esta solicitação será removida do navegador. Esta ação não pode ser desfeita.')) return;
-  if (save({...state,requests:state.requests.filter(r => r.id !== id)})) { $('request-dialog').close(); toast('Solicitação excluída.'); }
-});
+async function deleteRequest(id) {
+  const request = state.requests.find(r => r.id === id);
+  if (!request) return;
+  const location = sessionOnly ? 'desta visualização' : 'do navegador';
+  if (!await confirmAction('Excluir solicitação?',`“${request.title}” será removida ${location}. Esta ação não pode ser desfeita.`)) return;
+  if (save({...state,requests:state.requests.filter(r => r.id !== id)})) {
+    if ($('request-dialog').open && $('request-id').value === id) $('request-dialog').close();
+    toast('Solicitação excluída.');
+    (document.querySelector('.card-delete') || $('new-request')).focus();
+  }
+}
+$('delete-request').addEventListener('click',() => deleteRequest($('request-id').value));
 $('clear-examples').addEventListener('click',async () => {
   if (!await confirmAction('Remover os exemplos?','Somente exemplos não editados serão removidos. Suas solicitações serão mantidas.')) return;
   if (save({...state,requests:state.requests.filter(r => !r.sample)})) toast('Exemplos removidos. O quadro é seu!');
@@ -281,6 +373,11 @@ $('export').addEventListener('click',() => {
   toast('Backup exportado com todas as solicitações.');
 });
 window.addEventListener('storage',event => {
+  if (event.key === THEME_KEY || event.key === null) {
+    const theme = event.newValue;
+    applyTheme(theme === 'light' || theme === 'dark' ? theme : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    if (event.key === THEME_KEY) return;
+  }
   if (sessionOnly || (event.key !== STORAGE_KEY && event.key !== null)) return;
   try {
     const next = JSON.parse(event.newValue);
@@ -288,7 +385,8 @@ window.addEventListener('storage',event => {
     state = next; storageBlocked = false; render(); toast('Quadro atualizado por outra aba.');
   } catch { storageBlocked = true; render(); toast('Os dados locais foram removidos ou alterados. Verifique o armazenamento e recarregue para continuar.',true); }
 });
-window.addEventListener('focus',render);
+// Refocusing a preview must not replace a card between pointerdown and click.
+window.addEventListener('focus',() => { if (renderedDay !== dateString()) render(); });
 render();
   </script>
 </body>

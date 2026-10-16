@@ -15,7 +15,8 @@ O site está inteiramente em `index.html`, com CSS e JavaScript incorporados. N�
 ## Funcionalidades
 
 - Quatro etapas: Recebidas, Em análise, Em andamento e Concluídas.
-- Cadastro, edição e exclusão com confirmação.
+- Cadastro e edição de solicitações. Exclusão pelo ícone de lixeira em cada cartão ou pelo formulário de edição, com confirmação que identifica a solicitação.
+- Tema claro ou escuro pelo seletor no cabeçalho. A preferência fica salva separadamente dos dados do quadro; no primeiro acesso, segue o tema do sistema.
 - Título, descrição, projeto, responsável, prioridade, prazo e referência SIENGE.
 - Mudança de etapa por arraste no computador ou pelo campo Status no formulário, inclusive no celular e com teclado.
 - Busca sem distinção de acentos e filtro por prioridade.
@@ -28,10 +29,20 @@ O site está inteiramente em `index.html`, com CSS e JavaScript incorporados. N�
 
 Em prévias que bloqueiam o armazenamento, o quadro continua funcionando com dados temporários em memória e um aviso permanente na interface. Nesse modo, fechar ou recarregar a prévia descarta as alterações; exporte um backup antes.
 
+Em prévias que bloqueiam o armazenamento, a escolha do tema também dura apenas enquanto a página está aberta.
+
 Fora desse modo, os dados ficam no `localStorage` do navegador, na chave `solkanban.v1`. São específicos do navegador e da origem (protocolo, domínio e porta). Limpar os dados do site ou usar outro navegador/origem não mantém o mesmo quadro. Exporte cópias regularmente. O arquivo JSON contém as solicitações completas; nesta versão a restauração exige uma operação manual, pois ainda não há importação pela interface.
 
 Não há autenticação, banco de dados compartilhado, sincronização entre dispositivos ou conexão à API do SIENGE. A referência SIENGE é um campo de texto para organização local.
 
 ## Validação
 
-O fluxo foi validado em Chromium com Playwright: carregamento, cadastro, persistência após recarregar, busca com acentos, filtros combinados, edição, mudança de status pelo formulário e por arraste, indicadores de prazo, exportação JSON, limpeza de exemplos, confirmação/cancelamento de exclusão, quadro vazio persistido e formulário em tela de 390 px. A versão autocontida também foi validada isoladamente, em iframe com scripts permitidos e armazenamento/formulários nativos bloqueados, sem requisições externas. Não há suíte de testes ou ferramentas de build requeridas para executar o site.
+O fluxo foi validado em Chromium com Playwright: carregamento, cadastro, persistência após recarregar, busca com acentos, filtros combinados, edição, mudança de status pelo formulário e por arraste, indicadores de prazo, exportação JSON, limpeza de exemplos, confirmação/cancelamento de exclusão, quadro vazio persistido e formulário em tela de 390 px. A versão autocontida também foi validada isoladamente, em iframe com scripts permitidos e armazenamento/formulários nativos bloqueados, sem requisições externas. Não há ferramentas de build requeridas para executar o site.
+
+Os testes de exclusão e temas estão em `tests/kanban.spec.cjs`. Com o servidor acima em execução e Playwright disponível no Node, execute:
+
+```sh
+node tests/kanban.spec.cjs
+```
+
+O teste usa Chromium em `/usr/bin/chromium`. Para outra instalação, configure `SOLKANBAN_CHROMIUM`; para outro endereço do servidor, configure `SOLKANBAN_TEST_URL`. A suíte cobre exclusão por cartão e formulário, cancelamento, persistência, indicadores, tema do sistema, escolha claro/escuro, sincronização entre abas, uso no celular e prévia com armazenamento bloqueado.
