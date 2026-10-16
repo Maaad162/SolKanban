@@ -103,7 +103,7 @@
       </section>
       <section class="board-section" aria-labelledby="board-title">
         <div class="board-heading"><div class="board-tab"><span data-icon="board"></span><h2 id="board-title">Quadro de solicitações</h2></div><span class="board-hint"><span data-icon="move"></span>Arraste para mudar de etapa</span></div>
-        <div class="toolbar"><label class="search"><span data-icon="search"></span><input id="search" type="search" placeholder="Buscar solicitação, obra ou responsável…" aria-label="Buscar solicitações"></label><div class="toolbar-actions"><label class="filter"><span data-icon="filter"></span><select id="priority-filter" aria-label="Filtrar por prioridade"><option value="">Todas as prioridades</option><option value="high">Alta prioridade</option><option value="medium">Média prioridade</option><option value="low">Baixa prioridade</option></select></label><button class="button secondary" id="export"><span data-icon="download"></span><span>Exportar backup</span></button></div></div>
+        <div class="toolbar"><label class="search"><span data-icon="search"></span><input id="search" type="search" placeholder="Buscar código, obra ou responsável…" aria-label="Buscar solicitações"></label><div class="toolbar-actions"><label class="filter"><span data-icon="filter"></span><select id="priority-filter" aria-label="Filtrar por prioridade"><option value="">Todas as prioridades</option><option value="high">Alta prioridade</option><option value="medium">Média prioridade</option><option value="low">Baixa prioridade</option></select></label><button class="button secondary" id="export"><span data-icon="download"></span><span>Exportar backup</span></button></div></div>
         <div class="sample-notice" id="storage-notice" role="status" hidden><span data-icon="info"></span><p>Esta visualização não permite salvar no navegador. Você pode explorar o quadro, mas as alterações são temporárias. Exporte um backup antes de fechar.</p></div>
         <div class="sample-notice" id="sample-notice"><span data-icon="info"></span><p>Um ponto de partida: estas solicitações são <strong>exemplos</strong>. Crie as suas ou <button id="clear-examples">remova os exemplos</button>.</p></div>
         <div id="board" class="board"></div>
@@ -115,8 +115,8 @@
   <dialog id="request-dialog" aria-labelledby="dialog-title">
     <form id="request-form"><div class="dialog-heading"><div><div class="eyebrow">CADA ENTREGA COMEÇA AQUI</div><h2 id="dialog-title">Nova solicitação</h2></div><button type="button" class="icon-button" id="close-dialog" aria-label="Fechar formulário"><span data-icon="x"></span></button></div>
       <input type="hidden" id="request-id">
-      <label class="field">Título da solicitação *<input id="title" required maxlength="120" placeholder="O que precisa ser feito?"></label>
-      <label class="field">Descrição<textarea id="description" rows="3" maxlength="3000" placeholder="Adicione contexto e os detalhes importantes…"></textarea></label>
+      <label class="field">Código da Solicitação *<input id="code" type="text" inputmode="numeric" pattern="[0-9]+" required placeholder="Ex.: 1042" title="Informe apenas números inteiros, sem letras ou casas decimais."></label>
+      <label class="field">Descrição<textarea id="description" rows="3" maxlength="4000" placeholder="Adicione contexto e os detalhes importantes…"></textarea></label>
       <div class="form-grid"><label class="field">Obra / projeto<input id="project" maxlength="80" placeholder="Ex.: Residencial Aurora"></label><label class="field">Responsável<input id="assignee" maxlength="80" placeholder="Nome do responsável"></label><label class="field">Prioridade<select id="priority"><option value="low">Baixa</option><option value="medium" selected>Média</option><option value="high">Alta</option></select></label><label class="field">Status<select id="status"><option value="new">Recebidas</option><option value="review">Em análise</option><option value="progress">Em andamento</option><option value="done">Concluídas</option></select></label><label class="field">Prazo<input id="due" type="date" min="1900-01-01" max="9999-12-31"></label><label class="field">Referência SIENGE (opcional)<input id="reference" maxlength="40" placeholder="Ex.: SC-1042"></label></div>
       <p class="form-note" id="form-storage-note">Os dados ficam apenas neste navegador. Exporte backups para guardá-los.</p><div class="dialog-actions"><button type="button" id="delete-request" class="button danger" hidden>Excluir</button><div><button type="button" id="cancel-dialog" class="button secondary">Cancelar</button><button type="button" id="save-request" class="button primary">Salvar solicitação</button></div></div>
     </form>
@@ -167,6 +167,19 @@ const escapeHTML = (value) => String(value).replace(/[&<>"']/g, char => ({'&':'&
 const statuses = {new:'Recebidas', review:'Em análise', progress:'Em andamento', done:'Concluídas'};
 const priorities = {high:'Alta', medium:'Média', low:'Baixa'};
 const STORAGE_KEY = 'solkanban.v1';
+function parseCode(value) {
+  if (typeof value === 'number') return Number.isSafeInteger(value) && value >= 0 ? value : null;
+  if (typeof value !== 'string' || !/^[0-9]+$/.test(value)) return null;
+  const number = Number(value);
+  return Number.isSafeInteger(number) ? number : null;
+}
+// Keep older requests readable until the user supplies their actual code.
+const requestCode = request => parseCode(request.code ?? request.title);
+const requestLabel = request => requestCode(request) === null ? 'Código não informado' : `Código ${requestCode(request)}`;
+function requestDescription(request) {
+  const oldTitle = typeof request.title === 'string' && parseCode(request.title) === null ? request.title.trim() : '';
+  return [oldTitle,request.description].filter(Boolean).join('\n\n');
+}
 // Card identifiers also work in previews without a secure browser context.
 const newId = () => globalThis.crypto?.randomUUID?.() || `sk-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 const dateString = (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
@@ -181,7 +194,7 @@ const seedRows = [
   ['Liberação de pedido de compra','Conferir as condições comerciais e liberar o pedido no sistema.','Vila das Flores','Lucas Martins','high','progress',4,'SC-1036'],
   ['Atualização do centro de custo','Centros de custo revisados e organizados para o novo projeto.','Administrativo','Pedro Santos','low','done',-3,'SC-1031']
 ];
-const initialState = () => ({version:1, nextNumber:1009, requests:seedRows.map((r,i) => ({id:newId(),number:1001+i,title:r[0],description:r[1],project:r[2],assignee:r[3],priority:r[4],status:r[5],due:relativeDate(r[6]),reference:r[7],sample:true}))});
+const initialState = () => ({version:1, nextNumber:1009, requests:seedRows.map((r,i) => ({id:newId(),number:1001+i,code:Number(r[7].slice(3)),description:`${r[0]}. ${r[1]}`,project:r[2],assignee:r[3],priority:r[4],status:r[5],due:relativeDate(r[6]),reference:r[7],sample:true}))});
 let toastTimer;
 function toast(message, error = false) {
   clearTimeout(toastTimer);
@@ -196,7 +209,9 @@ function validState(value) {
   return value.requests.every(r => {
     if (!r || typeof r.id !== 'string' || ids.has(r.id) || !Number.isSafeInteger(r.number) || !Object.hasOwn(statuses,r.status) || !Object.hasOwn(priorities,r.priority)) return false;
     ids.add(r.id);
-    return ['title','description','project','assignee','due','reference'].every(k => typeof r[k] === 'string') && r.title.trim() && (!r.due || /^\d{4}-\d{2}-\d{2}$/.test(r.due));
+    const hasCode = Object.hasOwn(r,'code');
+    if (hasCode ? typeof r.code !== 'number' || parseCode(r.code) === null : typeof r.title !== 'string' || !r.title.trim()) return false;
+    return ['description','project','assignee','due','reference'].every(k => typeof r[k] === 'string') && (!r.due || /^\d{4}-\d{2}-\d{2}$/.test(r.due));
   });
 }
 let state;
@@ -239,7 +254,7 @@ function render() {
   $('export').disabled = storageBlocked;
   const query = normalize($('search').value.trim());
   const priority = $('priority-filter').value;
-  const filtered = state.requests.filter(r => (!priority || r.priority === priority) && normalize([r.title,r.description,r.project,r.assignee,r.reference,`SK-${r.number}`].join(' ')).includes(query));
+  const filtered = state.requests.filter(r => (!priority || r.priority === priority) && normalize([requestCode(r),r.title,r.description,r.project,r.assignee,r.reference,`SK-${r.number}`].join(' ')).includes(query));
   $('nav-count').textContent = state.requests.length;
   $('metric-total').textContent = state.requests.length;
   $('metric-progress').textContent = state.requests.filter(r => r.status === 'progress').length;
@@ -253,38 +268,48 @@ function render() {
   }).join('');
 }
 function cardHTML(r) {
+  const label = requestLabel(r);
+  const description = requestDescription(r);
   const initials = r.assignee.trim().split(/\s+/).map(n => n[0]).slice(0,2).join('').toUpperCase() || '?';
   const due = r.due ? new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short'}).format(new Date(`${r.due}T12:00:00`)).replace('.','') : 'Sem prazo';
-  return `<article class="card" draggable="true" data-id="${escapeHTML(r.id)}"><div class="card-top"><span class="priority ${r.priority}"><i></i>${priorities[r.priority]}</span><div class="card-meta"><span class="card-id">SK-${r.number}</span><button class="card-delete" data-delete="${escapeHTML(r.id)}" aria-label="Excluir solicitação: ${escapeHTML(r.title)}" title="Excluir solicitação" draggable="false">${icon('trash')}</button></div></div><button class="card-title" data-edit="${escapeHTML(r.id)}" aria-label="Editar ${escapeHTML(r.title)}">${escapeHTML(r.title)}</button>${r.description ? `<p class="card-description">${escapeHTML(r.description)}</p>` : ''}<div class="project-tag">${icon('building')}<span>${escapeHTML(r.project || 'Sem projeto')}</span></div><div class="card-bottom"><div class="person" title="${escapeHTML(r.assignee || 'Sem responsável')}"><span class="person-avatar">${escapeHTML(initials)}</span><span>${escapeHTML(r.assignee || 'Sem responsável')}</span></div><span class="due ${overdue(r) ? 'overdue' : ''}" title="${overdue(r) ? 'Prazo vencido: ' : ''}${escapeHTML(r.due || 'Sem prazo')}">${icon(r.status === 'done' ? 'check' : 'calendar')}${escapeHTML(due)}</span></div></article>`;
+  return `<article class="card" draggable="true" data-id="${escapeHTML(r.id)}"><div class="card-top"><span class="priority ${r.priority}"><i></i>${priorities[r.priority]}</span><div class="card-meta"><span class="card-id">SK-${r.number}</span><button class="card-delete" data-delete="${escapeHTML(r.id)}" aria-label="Excluir solicitação: ${escapeHTML(label)}" title="Excluir solicitação" draggable="false">${icon('trash')}</button></div></div><button class="card-title" data-edit="${escapeHTML(r.id)}" aria-label="Editar ${escapeHTML(label)}">${escapeHTML(label)}</button>${description ? `<p class="card-description">${escapeHTML(description)}</p>` : ''}<div class="project-tag">${icon('building')}<span>${escapeHTML(r.project || 'Sem projeto')}</span></div><div class="card-bottom"><div class="person" title="${escapeHTML(r.assignee || 'Sem responsável')}"><span class="person-avatar">${escapeHTML(initials)}</span><span>${escapeHTML(r.assignee || 'Sem responsável')}</span></div><span class="due ${overdue(r) ? 'overdue' : ''}" title="${overdue(r) ? 'Prazo vencido: ' : ''}${escapeHTML(r.due || 'Sem prazo')}">${icon(r.status === 'done' ? 'check' : 'calendar')}${escapeHTML(due)}</span></div></article>`;
 }
-const fields = ['title','description','project','assignee','priority','status','due','reference'];
+const fields = ['description','project','assignee','priority','status','due','reference'];
 function openRequest(id = '',status = 'new') {
   $('request-form').reset();
-  $('title').setCustomValidity('');
+  $('code').setCustomValidity('');
   $('request-id').value = id;
   const request = state.requests.find(r => r.id === id);
   $('dialog-title').textContent = request ? 'Editar solicitação' : 'Nova solicitação';
   $('delete-request').hidden = !request;
-  if (request) fields.forEach(field => { $(field).value = request[field]; });
+  if (request) {
+    fields.forEach(field => { $(field).value = request[field]; });
+    $('code').value = requestCode(request) ?? '';
+    $('description').value = requestDescription(request);
+  }
   else $('status').value = status;
   $('request-dialog').showModal();
-  $('title').focus();
+  $('code').focus();
 }
 $('new-request').addEventListener('click',() => openRequest());
 ['close-dialog','cancel-dialog'].forEach(id => $(id).addEventListener('click',() => $('request-dialog').close()));
 $('search').addEventListener('input',render);
 $('priority-filter').addEventListener('change',render);
-$('title').addEventListener('input',() => $('title').setCustomValidity(''));
+$('code').addEventListener('input',() => $('code').setCustomValidity(''));
 function submitRequest(event) {
   event.preventDefault();
+  const code = parseCode($('code').value);
+  $('code').setCustomValidity(code === null ? 'Informe o Código da Solicitação usando apenas números inteiros válidos, sem letras ou casas decimais.' : '');
   if (!$('request-form').reportValidity()) return;
-  if (!$('title').value.trim()) { $('title').setCustomValidity('Informe um título para a solicitação.'); $('title').reportValidity(); return; }
   const next = structuredClone(state);
   const id = $('request-id').value;
   const existing = next.requests.find(r => r.id === id);
   if (id && !existing) { toast('Esta solicitação foi removida em outra aba. Feche e atualize o quadro.',true); return; }
   const request = existing || {id:newId(),number:next.nextNumber++,sample:false};
+  request.code = code;
   fields.forEach(field => { request[field] = $(field).value.trim(); });
+  // The previous text title is preserved in the editable description.
+  delete request.title;
   // Once edited, an example becomes user data and is kept when clearing examples.
   request.sample = false;
   if (!existing) next.requests.push(request);
@@ -320,7 +345,7 @@ async function deleteRequest(id) {
   const request = state.requests.find(r => r.id === id);
   if (!request) return;
   const location = sessionOnly ? 'desta visualização' : 'do navegador';
-  if (!await confirmAction('Excluir solicitação?',`“${request.title}” será removida ${location}. Esta ação não pode ser desfeita.`)) return;
+  if (!await confirmAction('Excluir solicitação?',`“${requestLabel(request)}” será removida ${location}. Esta ação não pode ser desfeita.`)) return;
   if (save({...state,requests:state.requests.filter(r => r.id !== id)})) {
     if ($('request-dialog').open && $('request-id').value === id) $('request-dialog').close();
     toast('Solicitação excluída.');

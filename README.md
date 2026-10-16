@@ -17,7 +17,9 @@ O site está inteiramente em `index.html`, com CSS e JavaScript incorporados. N�
 - Quatro etapas: Recebidas, Em análise, Em andamento e Concluídas.
 - Cadastro e edição de solicitações. Exclusão pelo ícone de lixeira em cada cartão ou pelo formulário de edição, com confirmação que identifica a solicitação.
 - Tema claro ou escuro pelo seletor no cabeçalho. A preferência fica salva separadamente dos dados do quadro; no primeiro acesso, segue o tema do sistema.
-- Título, descrição, projeto, responsável, prioridade, prazo e referência SIENGE.
+- Código da Solicitação obrigatório, aceitando apenas inteiros não negativos, sem letras, sinais, notação científica ou casas decimais. O código é salvo como número e aparece no título do cartão. Valores acima de `Number.MAX_SAFE_INTEGER` (9.007.199.254.740.991) são rejeitados para evitar perda de precisão.
+- Descrição, projeto, responsável, prioridade, prazo e referência SIENGE.
+- Solicitações antigas são mantidas. Se o antigo título era textual, o cartão informa que o código ainda não foi preenchido; ao editar, esse texto aparece na descrição e o código deve ser informado.
 - Mudança de etapa por arraste no computador ou pelo campo Status no formulário, inclusive no celular e com teclado.
 - Busca sem distinção de acentos e filtro por prioridade.
 - Indicadores gerais de volume, andamento, conclusão e prazos vencidos. Os filtros afetam os cartões; os indicadores continuam mostrando o total do quadro.
@@ -39,10 +41,11 @@ Não há autenticação, banco de dados compartilhado, sincronização entre dis
 
 O fluxo foi validado em Chromium com Playwright: carregamento, cadastro, persistência após recarregar, busca com acentos, filtros combinados, edição, mudança de status pelo formulário e por arraste, indicadores de prazo, exportação JSON, limpeza de exemplos, confirmação/cancelamento de exclusão, quadro vazio persistido e formulário em tela de 390 px. A versão autocontida também foi validada isoladamente, em iframe com scripts permitidos e armazenamento/formulários nativos bloqueados, sem requisições externas. Não há ferramentas de build requeridas para executar o site.
 
-Os testes de exclusão e temas estão em `tests/kanban.spec.cjs`. Com o servidor acima em execução e Playwright disponível no Node, execute:
+Os testes de exclusão e temas estão em `tests/kanban.spec.cjs`; a validação de códigos e a compatibilidade com solicitações antigas estão em `tests/request-code.spec.cjs`. Com o servidor acima em execução e Playwright disponível no Node, execute:
 
 ```sh
 node tests/kanban.spec.cjs
+node tests/request-code.spec.cjs
 ```
 
 O teste usa Chromium em `/usr/bin/chromium`. Para outra instalação, configure `SOLKANBAN_CHROMIUM`; para outro endereço do servidor, configure `SOLKANBAN_TEST_URL`. A suíte cobre exclusão por cartão e formulário, cancelamento, persistência, indicadores, tema do sistema, escolha claro/escuro, sincronização entre abas, uso no celular e prévia com armazenamento bloqueado.

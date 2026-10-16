@@ -56,11 +56,11 @@ const executablePath = process.env.SOLKANBAN_CHROMIUM || '/usr/bin/chromium';
 
     // New user data and editor deletion share the same behavior.
     await page.locator('#new-request').click();
-    await page.locator('#title').fill('Pedido criado pelo usuário');
+    await page.locator('#code').fill('54321');
     await page.locator('#status').selectOption('done');
     await page.locator('#save-request').click();
     assert.equal(await page.locator('#metric-done').textContent(), '2');
-    await page.getByRole('button', { name: 'Editar Pedido criado pelo usuário', exact: true }).click();
+    await page.getByRole('button', { name: 'Editar Código 54321', exact: true }).click();
     await page.locator('#delete-request').click();
     await page.locator('#confirm-dialog button[value="confirm"]').click();
     await page.waitForFunction(() => !document.querySelector('#request-dialog').open);
